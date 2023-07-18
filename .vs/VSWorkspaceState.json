@@ -2,10 +2,16 @@
   "ExpandedNodes": [
     "",
     "\\img",
+<<<<<<< HEAD
     "\\img\\games",
     "\\_includes",
     "\\_layouts",
     "\\_posts"
+=======
+    "\\img\\posts",
+    "\\img\\posts\\stationarity",
+    "\\posts"
+>>>>>>> e1099c546eb1dfb0dce203d631b35a7e8dd5b25a
   ],
   "PreviewInSolutionExplorer": false
 }
