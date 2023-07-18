@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    Stationarity in Python - Gabriela Filipkowska
+    
+  </title>
+
+  <meta name="description" content="Background">
+
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+  <script src="https://use.fontawesome.com/releases/v5.15.3/js/all.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/2022/11/10/stationarity.html">
+  <link rel="alternate" type="application/rss+xml" title="Gabriela Filipkowska" href="/feed.xml">
+
+</head>
+
+
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand" href="/">Gabriela Filipkowska</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      Menu
+      <i class="fa fa-bars"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/gamedev">Games</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/posts">Posts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/events">Events</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about">About</a>
+            </li>
+            <!--<li class="nav-item">
+      <a class="nav-link" href="/contact">Contact</a>
+    </li>-->
+        </ul>
+        </div>
+      </div>
+    </nav>
+
+
+    <!-- Page Header -->
+
+<header class="masthead" style="background-image: url('/img/bg-post.jpg')">
+    
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <h1>Stationarity in Python</h1>
+                        
+                        <h2 class="subheading">tests and the reason behind</h2>
+                        
+                        <span class="meta">
+                            Posted by
+                            <a href="#">Gabriela Filipkowska</a>
+                            on November 10, 2022 &middot; <span class="reading-time" title="Estimated read time">
+  
+   4 mins  read </span>
+
+                        </span>
+                        <span class="meta">
+                            (last edited on November 23, 2022)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <head>
+        <!-- Get the syntax highlighting library -->
+        <link rel="stylesheet"
+              href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
+    </head>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+
+                <h2>Background</h2>
+
+<p>Before we jump into looking if our time series are stationary or not. Firstly, we need to understand what it means and why it is important.</p>
+
+<p>
+    What does stationary time series mean? It simply means that its joint probability distribution is time-invariant.
+    In a regression model, the ordinary least squares (OLS) estimators are not consistent for non-stationary series and the standard statistical
+    tests are not valid. Meanwhile, many of statistical tests assume that the data is stationary. Therefore, making it very important to consider
+    when doing some data analysis.
+</p>
+
+
+<h2>Testing for unit root in Python</h2>
+
+<p>
+    There are a many unit-root and stationarity tests available. However, here, I will focus on the most popular one unit root test, i.e. Augmented Dickey-Fuller ('ADF').
+    However, you may wish to also try Phillips-Perron ('PP'), and for checking the stationarity, Kwiatkowski-Phillips-Schmidt-Shin ('KPSS'). ADF and PP tests test a null hypothesis that the
+    process contains the unit root against the alternative that the process in weakly stationary. Whereas the KPSS test tests the null hypothesis of the process being
+    weakly stationary against the alternative that the process contains a unit root.
+</p>
+
+<p>To begin with, let us create a time series:</p>
+
+<pre><code class="language-python">> import numpy as np
+> import matplotlib.pyplot as plt
+
+> np.random.seed(seed=123)
+> mean, standard_dev = 0, 1
+> errors = np.random.normal(mean, standard_dev, 1000)
+> y_1 = []
+> for i in range(0,1000):
+>     y_1.append(errors[i])
+> plt.plot(y_1)
+</code></pre>
+
+
+
+<img src="/img/posts/stationarity/constant.png" alt="Plotted constant series">
+<p></p>
+
+<p>To test this series we run the following code:</p>
+
+<pre><code class="language-python">> from arch.unitroot import ADF
+> print(ADF(y_1, method = 'bic', trend='c'))
+</code></pre>
+<pre><code class="nohighlight">
+    Augmented Dickey-Fuller Results
+    =====================================
+    Test Statistic                -31.923
+    P-value                         0.000
+    Lags                                0
+    -------------------------------------
+
+    Trend: Constant
+    Critical Values: -3.44 (1%), -2.86 (5%), -2.57 (10%)
+    Null Hypothesis: The process contains a unit root.
+    Alternative Hypothesis: The process is weakly stationary.
+</code></pre>
+<p>Since the p-value is very small, there is enough statistical evidence to reject the null hypothesis that the process contains a unit root. Therefore, the results point on the corresponding series being weakly stationary.</p>
+
+<p> For trending series:</p>
+
+<pre><code class="language-python">> x = np.arange(0, 10, 0.01)
+> y_2 = []
+> for i in range(0,1000):
+>    y_2.append(x[i]+errors[i])
+> plt.plot(y_2)
+</code></pre>
+
+
+<img src="/img/posts/stationarity/trending.png" alt="Plotted trending series">
+<p></p>
+
+
+<pre><code class="language-python">> print(ADF(y_2, method = 'bic', trend='c'))
+</code></pre>
+<pre><code class="nohighlight">
+    Augmented Dickey-Fuller Results
+    =====================================
+    Test Statistic                 -0.746
+    P-value                         0.834
+    Lags                               11
+    -------------------------------------
+
+    Trend: Constant
+    Critical Values: -3.44 (1%), -2.86 (5%), -2.57 (10%)
+    Null Hypothesis: The process contains a unit root.
+    Alternative Hypothesis: The process is weakly stationary.
+</code></pre>
+<p>
+    Here, since tending series were not taken into consideration, the test failed to reject the null hypothesis. This result indicates that the series may be non-stationary. This makes sense,
+    since only a constant component was allowed for, and these series cointains a linear trend, and so the mean is not time invariant. Let us fix this by including a constant and linear time trend.
+</p>
+
+<pre><code class="language-python">> print(ADF(y_2, method = 'bic', trend='ct'))
+</code></pre>
+<pre><code class="nohighlight">
+       Augmented Dickey-Fuller Results
+    =====================================
+    Test Statistic                -30.829
+    P-value                         0.000
+    Lags                                0
+    -------------------------------------
+
+    Trend: Constant and Linear Time Trend
+    Critical Values: -3.97 (1%), -3.41 (5%), -3.13 (10%)
+    Null Hypothesis: The process contains a unit root.
+    Alternative Hypothesis: The process is weakly stationary.
+</code></pre>
+
+
+<p>After taking away this linear trend the null hypothesis can indeed be rejected.</p>
+
+<pre><code class="language-python">> from arch.unitroot import ADF
+> print(ADF(y_1, method = 'bic', trend='c'))
+</code></pre>
+<pre><code class="nohighlight">
+       Augmented Dickey-Fuller Results
+    =====================================
+    Test Statistic                -31.923
+    P-value                         0.000
+    Lags                                0
+    -------------------------------------
+
+    Trend: Constant
+    Critical Values: -3.44 (1%), -2.86 (5%), -2.57 (10%)
+    Null Hypothesis: The process contains a unit root.
+    Alternative Hypothesis: The process is weakly stationary.
+</code></pre>
+
+
+
+                <!-- Highlighting syntax -->
+
+                <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+                <script>hljs.highlightAll();</script>
+
+                <hr>
+
+                <div class="clearfix">
+
+                    
+                    
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+
+<hr>
+
+<footer>
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+              <ul class="list-inline text-center">
+                  
+                  
+                  
+                  
+                  
+                  <li class="list-inline-item">
+                      <a href="https://github.com/gfilipkowska">
+                          <span class="fa-stack fa-lg">
+                              <i class="fas fa-circle fa-stack-2x"></i>
+                              <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                          </span>
+                      </a>
+                  </li>
+                  
+                  
+                  <li class="list-inline-item">
+                      <a href="https://instagram.com/xonty.indiegames">
+                          <span class="fa-stack fa-lg">
+                              <i class="fas fa-circle fa-stack-2x"></i>
+                              <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
+                          </span>
+                      </a>
+                  </li>
+                  
+              </ul>
+              <p class="copyright text-muted">
+                  Copyright &copy; Gabriela Filipkowska 2023
+                  <ul align="center" class="copyright text-muted"> <li style="display:inline-block;"><a class="nav-link" href="/privacy-policy">Privacy Policy</a></li><li style="display:inline-block;"> <a class="nav-link" href="/terms">Terms</a></li></ul>
+              </p>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/vendor/startbootstrap-clean-blog/js/scripts.js"></script>
+
+<script src="/assets/scripts.js"></script>
+
+
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXXXXXX-X"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-XXXXXXXXX-X');
+</script>
+
+
+
+</body>
+
+</html>
