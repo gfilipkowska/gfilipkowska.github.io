@@ -6,8 +6,8 @@
     <title>Unity WebGL Player | CryptoGame</title>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=350 height=560 style="width: 350px; height: 560px; background: #231F20"></canvas>
-    <script src="Build/WebBuild - PreEvent - Testing.loader.js"></script>
+    <canvas id="unity-canvas" width=350 height=560 tabindex="-1" style="width: 350px; height: 560px; background: #231F20"></canvas>
+    <script src="Build/WebBuild - PreEvent - new unity version.loader.js"></script>
     <script>
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
         // Mobile device style: fill the whole browser client area with the game canvas:
@@ -25,9 +25,9 @@
       }
 
       createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/WebBuild - PreEvent - Testing.data",
-        frameworkUrl: "Build/WebBuild - PreEvent - Testing.framework.js",
-        codeUrl: "Build/WebBuild - PreEvent - Testing.wasm",
+        dataUrl: "Build/WebBuild - PreEvent - new unity version.data",
+        frameworkUrl: "Build/WebBuild - PreEvent - new unity version.framework.js",
+        codeUrl: "Build/WebBuild - PreEvent - new unity version.wasm",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "XonTy",
         productName: "CryptoGame",
